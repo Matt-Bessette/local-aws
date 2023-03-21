@@ -26,6 +26,6 @@ export class ListTagsForResourceHandler extends AbstractActionHandler {
 
   protected async handle({ ResourceArn }: QueryParams, awsProperties: AwsProperties) {
     const tags = await this.tagsService.getByArn(ResourceArn);
-    return TagsService.getXmlSafeAttributesMap(tags);
+    return TagsService.getXmlSafeTagsMap(tags);
   }
 }

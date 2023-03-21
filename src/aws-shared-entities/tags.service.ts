@@ -47,7 +47,11 @@ export class TagsService {
     return pairs;
   }
 
-  static getXmlSafeAttributesMap(tags: Tag[]) {
+  static getXmlSafeTagsMap(tags: Tag[]) {
     return { Tags: { member: tags.map(({ name, value }) => ({ Key: name, Value: value })) } };
+  }
+
+  static getJsonSafeTagsMap(tags: Tag[]) {
+    return tags.map(({ name, value }) => ({ Key: name, Value: value }));
   }
 }

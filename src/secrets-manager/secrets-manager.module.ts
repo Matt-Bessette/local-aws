@@ -5,10 +5,14 @@ import { Action } from '../action.enum';
 import { AwsSharedEntitiesModule } from '../aws-shared-entities/aws-shared-entities.module';
 import { DefaultActionHandlerProvider } from '../default-action-handler/default-action-handler.provider';
 import { ExistingActionHandlersProvider } from '../default-action-handler/existing-action-handlers.provider';
+import { CreateSecretHandler } from './create-secret.handler';
+import { DescribeSecretHandler } from './describe-secret.handler';
+import { Secret } from './secret.entity';
 import { SecretsManagerHandlers } from './secrets-manager.constants';
 
 const handlers = [
-
+  CreateSecretHandler,
+  DescribeSecretHandler,
 ]
 
 const actions = [
@@ -38,7 +42,7 @@ const actions = [
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([]),
+    TypeOrmModule.forFeature([Secret]),
     AwsSharedEntitiesModule,
   ],
   providers: [

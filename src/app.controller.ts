@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Inject, Post, Headers } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, Post, Headers, Header } from '@nestjs/common';
 import { ActionHandlers } from './app.constants';
 import * as Joi from 'joi';
 import { Action } from './action.enum';
@@ -6,6 +6,7 @@ import { AbstractActionHandler, Format } from './abstract-action.handler';
 import * as js2xmlparser from 'js2xmlparser';
 import { ConfigService } from '@nestjs/config';
 import { CommonConfig } from './config/common-config.interface';
+import * as uuid from 'uuid';
 
 @Controller()
 export class AppController {
@@ -17,6 +18,7 @@ export class AppController {
   ) {}
 
   @Post()
+  @Header('x-amzn-RequestId', uuid.v4())
   async post(
     @Body() body: Record<string, any>,
     @Headers() headers: Record<string, any>,
