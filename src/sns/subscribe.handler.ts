@@ -7,7 +7,7 @@ import * as Joi from 'joi';
 import { TagsService } from '../aws-shared-entities/tags.service';
 import { AttributesService } from '../aws-shared-entities/attributes.service';
 import { SnsTopicSubscription } from './sns-topic-subscription.entity';
-import { uuid } from 'uuidv4';
+import * as uuid from 'uuid';
 
 type QueryParams = {
   TopicArn: string;
@@ -38,7 +38,7 @@ export class SubscribeHandler extends AbstractActionHandler<QueryParams> {
   protected async handle(params: QueryParams, awsProperties: AwsProperties) {
 
     const subscription = await this.snsTopicSubscription.create({
-      id: uuid(),
+      id: uuid.v4(),
       topicArn: params.TopicArn,
       protocol: params.Protocol,
       endpoint: params.Endpoint,
