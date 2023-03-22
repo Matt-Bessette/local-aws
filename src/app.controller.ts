@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Inject, Post, Headers, Header } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Inject, Post, Headers, Header, Req, HttpStatus, HttpCode, UseInterceptors } from '@nestjs/common';
 import { ActionHandlers } from './app.constants';
 import * as Joi from 'joi';
 import { Action } from './action.enum';
@@ -7,6 +7,8 @@ import * as js2xmlparser from 'js2xmlparser';
 import { ConfigService } from '@nestjs/config';
 import { CommonConfig } from './config/common-config.interface';
 import * as uuid from 'uuid';
+import { Request } from 'express';
+import { AuditInterceptor } from './audit/audit.interceptor';
 
 @Controller()
 export class AppController {
@@ -18,8 +20,10 @@ export class AppController {
   ) {}
 
   @Post()
-  @Header('x-amzn-RequestId', uuid.v4())
+  @HttpCode(200)
+  @UseInterceptors(AuditInterceptor)
   async post(
+    @Req() request: Request,
     @Body() body: Record<string, any>,
     @Headers() headers: Record<string, any>,
   ) {
@@ -29,7 +33,7 @@ export class AppController {
       return o;
     }, {})
 
-    const queryParams = { ...body, ...lowerCasedHeaders };
+    const queryParams = { __path: request.path, ...body, ...lowerCasedHeaders };
     console.log({queryParams})
     const actionKey = queryParams['x-amz-target'] ? 'x-amz-target' : 'Action';
 
@@ -50,7 +54,11 @@ export class AppController {
       throw new BadRequestException(validatorError);
     }
 
-    const awsProperties = { accountId: this.configService.get('AWS_ACCOUNT_ID'), region: this.configService.get('AWS_REGION') };
+    const awsProperties = { 
+      accountId: this.configService.get('AWS_ACCOUNT_ID'), 
+      region: this.configService.get('AWS_REGION'),
+      host: this.configService.get('HOST'),
+    };
 
     const jsonResponse = await handler.getResponse(validQueryParams, awsProperties);
     if (handler.format === Format.Xml) {

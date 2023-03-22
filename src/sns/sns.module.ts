@@ -6,11 +6,13 @@ import { AwsSharedEntitiesModule } from '../aws-shared-entities/aws-shared-entit
 import { ExistingActionHandlers } from '../default-action-handler/default-action-handler.constants';
 import { DefaultActionHandlerProvider } from '../default-action-handler/default-action-handler.provider';
 import { ExistingActionHandlersProvider } from '../default-action-handler/existing-action-handlers.provider';
+import { SqsModule } from '../sqs/sqs.module';
 import { CreateTopicHandler } from './create-topic.handler';
 import { GetSubscriptionAttributesHandler } from './get-subscription-attributes.handler';
 import { GetTopicAttributesHandler } from './get-topic-attributes.handler';
 import { ListTagsForResourceHandler } from './list-tags-for-resource.handler';
 import { ListTopicsHandler } from './list-topics.handler';
+import { PublishHandler } from './publish.handler';
 import { SetSubscriptionAttributesHandler } from './set-subscription-attributes.handler';
 import { SetTopicAttributesHandler } from './set-topic-attributes.handler';
 import { SnsTopicSubscription } from './sns-topic-subscription.entity';
@@ -24,6 +26,7 @@ const handlers = [
   GetTopicAttributesHandler,
   ListTagsForResourceHandler,
   ListTopicsHandler,
+  PublishHandler,
   SetSubscriptionAttributesHandler,
   SetTopicAttributesHandler,
   SubscribeHandler,
@@ -78,6 +81,7 @@ const actions = [
   imports: [
     TypeOrmModule.forFeature([SnsTopic, SnsTopicSubscription]),
     AwsSharedEntitiesModule,
+    SqsModule,
   ],
   providers: [
     ...handlers,

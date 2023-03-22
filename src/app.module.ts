@@ -10,6 +10,10 @@ import { AppController } from './app.controller';
 import { AwsSharedEntitiesModule } from './aws-shared-entities/aws-shared-entities.module';
 import { SecretsManagerModule } from './secrets-manager/secrets-manager.module';
 import { SecretsManagerHandlers } from './secrets-manager/secrets-manager.constants';
+import { SqsModule } from './sqs/sqs.module';
+import { SqsHandlers } from './sqs/sqs.constants';
+import { Audit } from './audit/audit.entity';
+import { AuditInterceptor } from './audit/audit.interceptor';
 
 @Module({
   imports: [
@@ -28,19 +32,23 @@ import { SecretsManagerHandlers } from './secrets-manager/secrets-manager.consta
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
       }),
     }),
-    SnsModule,
+    TypeOrmModule.forFeature([Audit]),
     SecretsManagerModule,
+    SnsModule,
+    SqsModule,
     AwsSharedEntitiesModule,
   ],
   controllers: [
     AppController,
   ],
   providers: [
+    AuditInterceptor,
     {
       provide: ActionHandlers,
       useFactory: (...args) => args.reduce((m, hs) => ({ ...m, ...hs }), {}),
       inject: [
         SnsHandlers,
+        SqsHandlers,
         SecretsManagerHandlers,
       ],
     },

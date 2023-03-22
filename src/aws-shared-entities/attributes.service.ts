@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Attribute } from './attributes.entity';
 import { CreateAttributeDto } from './create-attribute.dto';
 
+const ResourcePolicyName = 'ResourcePolicy';
+
 @Injectable()
 export class AttributesService {
 
@@ -14,6 +16,14 @@ export class AttributesService {
 
   async getByArn(arn: string): Promise<Attribute[]> {
     return await this.repo.find({ where: { arn }});
+  }
+
+  async getResourcePolicyByArn(arn: string): Promise<Attribute> {
+    return await this.repo.findOne({ where: { arn, name: ResourcePolicyName }});
+  }
+
+  async createResourcePolicy(arn: string, value: string): Promise<Attribute> {
+    return await this.create({arn, value, name: ResourcePolicyName });
   }
 
   async create(dto: CreateAttributeDto): Promise<Attribute> {

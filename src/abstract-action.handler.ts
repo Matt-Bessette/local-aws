@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 export type AwsProperties = {
   accountId: string;
   region: string;
+  host: string;
 }
 
 export enum Format {

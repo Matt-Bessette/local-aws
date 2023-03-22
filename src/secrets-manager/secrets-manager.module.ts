@@ -7,12 +7,21 @@ import { DefaultActionHandlerProvider } from '../default-action-handler/default-
 import { ExistingActionHandlersProvider } from '../default-action-handler/existing-action-handlers.provider';
 import { CreateSecretHandler } from './create-secret.handler';
 import { DescribeSecretHandler } from './describe-secret.handler';
+import { GetResourcePolicyHandler } from './get-resource-policy.handler';
+import { GetSecretValueHandler } from './get-secret-value.handler';
+import { PutResourcePolicyHandler } from './put-resource-policy.handler';
+import { PutSecretValueHandler } from './put-secret-value.handler';
 import { Secret } from './secret.entity';
+import { SecretService } from './secret.service';
 import { SecretsManagerHandlers } from './secrets-manager.constants';
 
 const handlers = [
   CreateSecretHandler,
   DescribeSecretHandler,
+  GetResourcePolicyHandler,
+  GetSecretValueHandler,
+  PutResourcePolicyHandler,
+  PutSecretValueHandler,
 ]
 
 const actions = [
@@ -46,6 +55,7 @@ const actions = [
     AwsSharedEntitiesModule,
   ],
   providers: [
+    SecretService,
     ...handlers,
     ExistingActionHandlersProvider(handlers),
     DefaultActionHandlerProvider(SecretsManagerHandlers, Format.Json, actions),

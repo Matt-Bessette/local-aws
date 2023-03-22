@@ -5,15 +5,15 @@ import { AbstractActionHandler, AwsProperties, Format } from '../abstract-action
 import { Action } from '../action.enum';
 import * as Joi from 'joi';
 import { Secret } from './secret.entity';
-import { TagsService } from '../aws-shared-entities/tags.service';
 import { AttributesService } from '../aws-shared-entities/attributes.service';
 
 type QueryParams = {
   SecretId: string;
+  ResourcePolicy: string;
 }
 
 @Injectable()
-export class GetResourcePolicyHandler extends AbstractActionHandler {
+export class PutResourcePolicyHandler extends AbstractActionHandler {
   
   constructor(
     @InjectRepository(Secret)
@@ -24,10 +24,13 @@ export class GetResourcePolicyHandler extends AbstractActionHandler {
   }
 
   format = Format.Json;
-  action = Action.SecretsManagerGetResourcePolicy;
-  validator = Joi.object<QueryParams, true>({ SecretId: Joi.string().required() });
+  action = Action.SecretsManagerPutResourcePolicy;
+  validator = Joi.object<QueryParams, true>({ 
+    SecretId: Joi.string().required(),
+    ResourcePolicy: Joi.string().required(),
+  });
 
-  protected async handle({ SecretId }: QueryParams, awsProperties: AwsProperties) {
+  protected async handle({ SecretId, ResourcePolicy }: QueryParams, awsProperties: AwsProperties) {
 
     const name = Secret.getNameFromSecretId(SecretId);
     const secret = await this.secretRepo.findOne({ where: { name }, order: { createdAt: 'DESC' } });
@@ -36,11 +39,10 @@ export class GetResourcePolicyHandler extends AbstractActionHandler {
       throw new BadRequestException('ResourceNotFoundException', "Secrets Manager can't find the resource that you asked for.");
     }
 
-    const attribute = await this.attributesService.getResourcePolicyByArn(secret.arn);
+    await this.attributesService.createResourcePolicy(secret.arn, ResourcePolicy);
     return {
       ARN: secret.arn,
       Name: secret.name,
-      ResourcePolicy: attribute?.value,
     }
   }
 }

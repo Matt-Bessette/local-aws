@@ -27,11 +27,9 @@ export class DescribeSecretHandler extends AbstractActionHandler {
   validator = Joi.object<QueryParams, true>({ SecretId: Joi.string().required() });
 
   protected async handle({ SecretId }: QueryParams, awsProperties: AwsProperties) {
-    
-    const parts = SecretId.split(':');
-    const name = parts.length > 1 ? parts[-1] : SecretId;
 
-    const secret = await this.secretRepo.findOne({ where: { name } });
+    const name = Secret.getNameFromSecretId(SecretId);
+    const secret = await this.secretRepo.findOne({ where: { name }, order: { createdAt: 'DESC' } });
 
     if (!secret) {
       throw new BadRequestException('ResourceNotFoundException', "Secrets Manager can't find the resource that you asked for.");
@@ -42,19 +40,18 @@ export class DescribeSecretHandler extends AbstractActionHandler {
 
     return {
       "ARN": secret.arn,
-      "CreatedDate": new Date(secret.createdAt).getMilliseconds(),
-      "DeletedDate": 0,
+      "CreatedDate": new Date(secret.createdAt).toISOString(),
+      "DeletedDate": null,
       "Description": secret.description,
       "KmsKeyId": "",
-      "LastAccessedDate": new Date().getMilliseconds(),
-      "LastChangedDate": new Date(secret.createdAt).getMilliseconds(),
-      "LastRotatedDate": 0,
+      "LastChangedDate": new Date(secret.createdAt).toISOString(),
+      "LastRotatedDate": null,
       "Name": secret.name,
       "OwningService": secret.accountId,
       "PrimaryRegion": secret.region,
       "ReplicationStatus": [],
       "RotationEnabled": false,
       "Tags": listOfTagPairs,
-   }
+    }
   }
 }

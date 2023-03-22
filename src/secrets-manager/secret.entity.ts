@@ -28,4 +28,9 @@ export class Secret extends BaseEntity {
   get arn(): string {
     return `arn:aws:secretsmanager:${this.region}:${this.accountId}:${this.name}`;
   }
+
+  static getNameFromSecretId(secretId: string) {
+    const parts = secretId.split(':');
+    return parts.length > 1 ? parts.pop() : secretId;
+  }
 }

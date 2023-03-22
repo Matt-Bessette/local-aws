@@ -4,4 +4,5 @@ export interface CommonConfig {
   DB_DATABASE: string;
   DB_LOGGING?: boolean;
   DB_SYNCHRONIZE?: boolean;
+  HOST: string;
 }
