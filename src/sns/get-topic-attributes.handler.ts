@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AbstractActionHandler, AwsProperties, Format } from '../abstract-action.handler';
@@ -33,6 +33,11 @@ export class GetTopicAttributesHandler extends AbstractActionHandler {
     
     const name = TopicArn.split(':').pop();
     const topic = await this.snsTopicRepo.findOne({ where: { name }});
+
+    if (!topic) {
+      throw new BadRequestException();
+    }
+
     const attributes = await this.attributeService.getByArn(TopicArn);
     const attributeMap = attributes.reduce((m, a) => {
       m[a.name] = a.value;

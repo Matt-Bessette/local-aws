@@ -13,6 +13,8 @@ type QueueEntry = {
   createdAt: Date;
 }
 
+type Metrics = { total: number, inFlight: number}
+
 @Injectable()
 export class SqsQueueEntryService {
 
@@ -24,6 +26,20 @@ export class SqsQueueEntryService {
     private readonly sqsQueueRepo: Repository<SqsQueue>,
   ) {}
 
+  async findQueueByAccountIdAndName(accountId: string, name: string): Promise<SqsQueue> {
+    return await this.sqsQueueRepo.findOne({ where: { accountId, name } });
+  }
+
+  metrics(queueArn: string): Metrics {
+
+    const now = new Date();
+    return this.getQueueList(queueArn).reduce<Metrics>((acc, e) => {
+      acc.total += 1;
+      acc.inFlight += e.inFlightReleaseDate > now ? 1 : 0;
+      return acc;
+    }, { total: 0, inFlight: 0 });
+  }
+
   async publish(accountId: string, queueName: string, message: string) {
     const queue = await this.sqsQueueRepo.findOne({ where: { accountId, name: queueName }});
 
@@ -32,11 +48,7 @@ export class SqsQueueEntryService {
       return;
     }
 
-    if (this.queues) {
-      this.queues[queue.arn] = [];
-    }
-
-    this.queues[queue.arn].push({ 
+    this.getQueueList(queue.arn).push({ 
       id: uuid.v4(),
       queueArn: queue.arn,
       senderId: accountId,
@@ -56,7 +68,7 @@ export class SqsQueueEntryService {
     const accessDate = new Date();
     const newInFlightReleaseDate = new Date(accessDate);
     newInFlightReleaseDate.setSeconds(accessDate.getSeconds() + visabilityTimeout);
-    const records = this.queues[queue.arn]?.filter(e => e.inFlightReleaseDate <= accessDate).slice(0, maxNumberOfMessages - 1);
+    const records = this.getQueueList(queue.arn).filter(e => e.inFlightReleaseDate <= accessDate).slice(0, maxNumberOfMessages - 1);
     records.forEach(e => e.inFlightReleaseDate = newInFlightReleaseDate);
     return records;
   }
@@ -64,5 +76,14 @@ export class SqsQueueEntryService {
   async purge(accountId: string, queueName: string) {
     const queue = await this.sqsQueueRepo.findOne({ where: { accountId, name: queueName }});
     this.queues[queue.arn] = [];
+  }
+
+  private getQueueList(arn: string): QueueEntry[] {
+    
+    if (!this.queues[arn]) {
+      this.queues[arn] = [];
+    }
+
+    return this.queues[arn];
   }
 }

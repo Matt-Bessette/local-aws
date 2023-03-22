@@ -6,6 +6,8 @@ import { AwsSharedEntitiesModule } from '../aws-shared-entities/aws-shared-entit
 import { DefaultActionHandlerProvider } from '../default-action-handler/default-action-handler.provider';
 import { ExistingActionHandlersProvider } from '../default-action-handler/existing-action-handlers.provider';
 import { CreateQueueHandler } from './create-queue.handler';
+import { DeleteQueueHandler } from './delete-queue.handler';
+import { GetQueueAttributesHandler } from './get-queue-attributes.handler';
 import { PurgeQueueHandler } from './purge-queue.handler';
 import { ReceiveMessageHandler } from './receive-message.handler';
 import { SetQueueAttributesHandler } from './set-queue-attributes.handler';
@@ -15,6 +17,8 @@ import { SqsHandlers } from './sqs.constants';
 
 const handlers = [
   CreateQueueHandler,
+  DeleteQueueHandler,
+  GetQueueAttributesHandler,
   PurgeQueueHandler,
   ReceiveMessageHandler,
   SetQueueAttributesHandler,

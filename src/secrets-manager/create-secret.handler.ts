@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { AbstractActionHandler, AwsProperties, Format } from '../abstract-action.handler';
 import { Action } from '../action.enum';
 import * as Joi from 'joi';
-import { Secret } from './secret.entity';
 import { SecretService } from './secret.service';
 
 type QueryParams = {

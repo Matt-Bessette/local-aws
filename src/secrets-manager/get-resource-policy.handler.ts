@@ -5,7 +5,6 @@ import { AbstractActionHandler, AwsProperties, Format } from '../abstract-action
 import { Action } from '../action.enum';
 import * as Joi from 'joi';
 import { Secret } from './secret.entity';
-import { TagsService } from '../aws-shared-entities/tags.service';
 import { AttributesService } from '../aws-shared-entities/attributes.service';
 
 type QueryParams = {

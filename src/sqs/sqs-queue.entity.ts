@@ -1,4 +1,10 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { getPathFromUrl } from '../util/get-path-from-url';
+
+const attributeSlotMap = {
+  'Name': 'key',
+  'Value': 'value',
+}
 
 @Entity('sqs_queue')
 export class SqsQueue extends BaseEntity {
@@ -11,6 +17,12 @@ export class SqsQueue extends BaseEntity {
 
   @Column({ name: 'region', nullable: false })
   region: string;
+
+  @CreateDateColumn()
+  createdAt: string;
+
+  @UpdateDateColumn()
+  updatedAt: string;
 
   get arn(): string {
     return `arn:aws:sns:${this.region}:${this.accountId}:${this.name}`;
@@ -33,9 +45,26 @@ export class SqsQueue extends BaseEntity {
   }
 
   static tryGetAccountIdAndNameFromPathOrArn(pathOrArn: string): [string, string] {
-    if (pathOrArn.split(':').length) {
-      return SqsQueue.getAccountIdAndNameFromArn(pathOrArn);
+    const workingString = getPathFromUrl(pathOrArn);
+    if (workingString.split(':').length > 1) {
+      return SqsQueue.getAccountIdAndNameFromArn(workingString);
     }
-    return SqsQueue.getAccountIdAndNameFromPath(pathOrArn);
+    return SqsQueue.getAccountIdAndNameFromPath(workingString);
+  }
+
+  static attributePairs(queryParams: Record<string, string>): { key: string, value: string }[] {
+    const pairs = [null];
+    for (const param of Object.keys(queryParams)) {
+      const [type, idx, slot] = param.split('.');
+      if (type === 'Attribute') {
+        if (!pairs[+idx]) {
+          pairs[+idx] = { key: '', value: ''};
+        }
+        pairs[+idx][attributeSlotMap[slot]] = queryParams[param];
+      }
+    }
+
+    pairs.shift();
+    return pairs;
   }
 }

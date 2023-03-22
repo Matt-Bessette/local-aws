@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AbstractActionHandler, AwsProperties, Format } from '../abstract-action.handler';
@@ -8,6 +8,8 @@ import { TagsService } from '../aws-shared-entities/tags.service';
 import { AttributesService } from '../aws-shared-entities/attributes.service';
 import { SnsTopicSubscription } from './sns-topic-subscription.entity';
 import * as uuid from 'uuid';
+import { SqsQueueEntryService } from '../sqs/sqs-queue-entry.service';
+import { SqsQueue } from '../sqs/sqs-queue.entity';
 
 type QueryParams = {
   TopicArn: string;
@@ -23,6 +25,7 @@ export class SubscribeHandler extends AbstractActionHandler<QueryParams> {
     private readonly snsTopicSubscription: Repository<SnsTopicSubscription>,
     private readonly tagsService: TagsService,
     private readonly attributeService: AttributesService,
+    private readonly sqsQueueEntryService: SqsQueueEntryService,
   ) {
     super();
   }

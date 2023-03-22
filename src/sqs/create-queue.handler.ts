@@ -41,7 +41,7 @@ export class CreateQueueHandler extends AbstractActionHandler<QueryParams> {
     const tags = TagsService.tagPairs(params);
     await this.tagsService.createMany(queue.arn, tags);
 
-    const attributes = AttributesService.attributePairs(params);
+    const attributes = SqsQueue.attributePairs(params);
     await this.attributeService.createMany(queue.arn, attributes);
 
     return { QueueUrl: queue.getUrl(awsProperties.host) };

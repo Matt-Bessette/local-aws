@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Attribute } from './attributes.entity';
 import { CreateAttributeDto } from './create-attribute.dto';
 
@@ -20,6 +20,14 @@ export class AttributesService {
 
   async getResourcePolicyByArn(arn: string): Promise<Attribute> {
     return await this.repo.findOne({ where: { arn, name: ResourcePolicyName }});
+  }
+
+  async getByArnAndName(arn: string, name: string): Promise<Attribute> {
+    return await this.repo.findOne({ where: { arn, name }});
+  }
+
+  async getByArnAndNames(arn: string, names: string[]): Promise<Attribute[]> {
+    return await this.repo.find({ where: { arn, name: In(names) }});
   }
 
   async createResourcePolicy(arn: string, value: string): Promise<Attribute> {
