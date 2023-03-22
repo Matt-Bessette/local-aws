@@ -7,7 +7,7 @@ import { SqsQueueEntryService } from './sqs-queue-entry.service';
 import crypto from 'crypto';
 
 type QueryParams = {
-  __path: string;
+  QueueUrl: string;
   MaxNumberOfMessages?: number;
   VisibilityTimeout?: number;
 }
@@ -24,14 +24,14 @@ export class ReceiveMessageHandler extends AbstractActionHandler<QueryParams> {
   format = Format.Xml;
   action = Action.SqsReceiveMessage;
   validator = Joi.object<QueryParams, true>({ 
-    __path: Joi.string().required(),
+    QueueUrl: Joi.string().required(),
     MaxNumberOfMessages: Joi.number(),
     VisibilityTimeout: Joi.number(),
   });
 
-  protected async handle({ __path, MaxNumberOfMessages, VisibilityTimeout }: QueryParams, awsProperties: AwsProperties) {
+  protected async handle({ QueueUrl, MaxNumberOfMessages, VisibilityTimeout }: QueryParams, awsProperties: AwsProperties) {
 
-    const [accountId, name] = SqsQueue.getAccountIdAndNameFromPath(__path);
+    const [accountId, name] = SqsQueue.tryGetAccountIdAndNameFromPathOrArn(QueueUrl);
     const records = await this.sqsQueueEntryService.recieveMessages(accountId, name, MaxNumberOfMessages, VisibilityTimeout);
     return records.map(r => ({
       Message: {

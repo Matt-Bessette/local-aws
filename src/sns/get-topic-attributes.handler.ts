@@ -6,6 +6,7 @@ import { Action } from '../action.enum';
 import { SnsTopic } from './sns-topic.entity';
 import * as Joi from 'joi';
 import { AttributesService } from '../aws-shared-entities/attributes.service';
+import { SnsTopicSubscription } from './sns-topic-subscription.entity';
 
 type QueryParams = {
   TopicArn: string;
@@ -17,6 +18,8 @@ export class GetTopicAttributesHandler extends AbstractActionHandler {
   constructor(
     @InjectRepository(SnsTopic)
     private readonly snsTopicRepo: Repository<SnsTopic>,
+    @InjectRepository(SnsTopicSubscription)
+    private readonly snsTopicSubscriptionRepo: Repository<SnsTopicSubscription>,
     private readonly attributeService: AttributesService,
   ) {
     super();
@@ -28,7 +31,7 @@ export class GetTopicAttributesHandler extends AbstractActionHandler {
 
   protected async handle({ TopicArn }: QueryParams, awsProperties: AwsProperties) {
     
-    const name = TopicArn.split(':')[-1];
+    const name = TopicArn.split(':').pop();
     const topic = await this.snsTopicRepo.findOne({ where: { name }});
     const attributes = await this.attributeService.getByArn(TopicArn);
     const attributeMap = attributes.reduce((m, a) => {
@@ -36,10 +39,12 @@ export class GetTopicAttributesHandler extends AbstractActionHandler {
       return m;
     }, {});
 
+    const subscriptionCount = await this.snsTopicSubscriptionRepo.count({ where: { topicArn: TopicArn } });
+
     const response = {
       DisplayName: topic.name,
       Owner: topic.accountId,
-      SubscriptionsConfirmed: '0',
+      SubscriptionsConfirmed: `${subscriptionCount}`,
       SubscriptionsDeleted: '0',
       SubscriptionsPending: '0',
       TopicArn: topic.topicArn,

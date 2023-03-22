@@ -26,6 +26,10 @@ export class TagsService {
     }
   }
 
+  async deleteByArn(arn: string) {
+    await this.repo.delete({ arn });
+  }
+
   async deleteByArnAndName(arn: string, name: string) {
     await this.repo.delete({ arn, name });
   }

@@ -7,6 +7,7 @@ import { DefaultActionHandlerProvider } from '../default-action-handler/default-
 import { ExistingActionHandlersProvider } from '../default-action-handler/existing-action-handlers.provider';
 import { CreateQueueHandler } from './create-queue.handler';
 import { PurgeQueueHandler } from './purge-queue.handler';
+import { ReceiveMessageHandler } from './receive-message.handler';
 import { SetQueueAttributesHandler } from './set-queue-attributes.handler';
 import { SqsQueueEntryService } from './sqs-queue-entry.service';
 import { SqsQueue } from './sqs-queue.entity';
@@ -15,6 +16,7 @@ import { SqsHandlers } from './sqs.constants';
 const handlers = [
   CreateQueueHandler,
   PurgeQueueHandler,
+  ReceiveMessageHandler,
   SetQueueAttributesHandler,
 ]
 

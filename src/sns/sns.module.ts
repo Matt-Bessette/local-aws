@@ -19,6 +19,7 @@ import { SnsTopicSubscription } from './sns-topic-subscription.entity';
 import { SnsTopic } from './sns-topic.entity';
 import { SnsHandlers } from './sns.constants';
 import { SubscribeHandler } from './subscribe.handler';
+import { UnsubscribeHandler } from './unsubscribe.handler';
 
 const handlers = [
   CreateTopicHandler, 
@@ -30,6 +31,7 @@ const handlers = [
   SetSubscriptionAttributesHandler,
   SetTopicAttributesHandler,
   SubscribeHandler,
+  UnsubscribeHandler,
 ];
 
 const actions = [

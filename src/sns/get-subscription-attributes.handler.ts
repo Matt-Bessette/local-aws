@@ -28,8 +28,13 @@ export class GetSubscriptionAttributesHandler extends AbstractActionHandler {
 
   protected async handle({ SubscriptionArn }: QueryParams, awsProperties: AwsProperties) {
     
-    const id = SubscriptionArn.split(':')[-1];
+    const id = SubscriptionArn.split(':').pop();
     const subscription = await this.snsTopicSubscriptionRepo.findOne({ where: { id }});
+
+    if (!subscription) {
+      return;
+    }
+
     const attributes = await this.attributeService.getByArn(SubscriptionArn);
     const attributeMap = attributes.reduce((m, a) => {
       m[a.name] = a.value;
