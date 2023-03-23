@@ -27,19 +27,24 @@ export class SetQueueAttributesHandler extends AbstractActionHandler<QueryParams
   format = Format.Xml;
   action = Action.SqsSetQueueAttributes;
   validator = Joi.object<QueryParams, true>({ 
-    'Attribute.Name': Joi.string().required(),
-    'Attribute.Value': Joi.string().required(),
+    'Attribute.Name': Joi.string(),
+    'Attribute.Value': Joi.string(),
     __path: Joi.string().required(),
   });
 
   protected async handle(params: QueryParams, awsProperties: AwsProperties) {
     const [accountId, name] = SqsQueue.getAccountIdAndNameFromPath(params.__path);
     const queue = await this.sqsQueueRepo.findOne({ where: { accountId , name  } });
+    const attributes = SqsQueue.attributePairs(params);
+
+    if (params['Attribute.Name'] && params['Attribute.Value']) {
+      attributes.push({ key: params['Attribute.Name'], value: params['Attribute.Value'] });
+    }
     
     if(!queue) {
       throw new BadRequestException('ResourceNotFoundException');
     }
 
-    await this.attributeService.create({ name: params['Attribute.Name'], value: params['Attribute.Value'], arn: queue.arn });
+    await this.attributeService.createMany(queue.arn, attributes);
   }
 }

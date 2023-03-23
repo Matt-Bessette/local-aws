@@ -4,6 +4,8 @@ import { Observable, tap } from 'rxjs';
 import { Repository } from 'typeorm';
 import { Audit } from './audit.entity';
 import * as uuid from 'uuid';
+import { ConfigService } from '@nestjs/config';
+import { CommonConfig } from '../config/common-config.interface';
 
 @Injectable()
 export class AuditInterceptor<T> implements NestInterceptor<T, Response> {
@@ -11,9 +13,14 @@ export class AuditInterceptor<T> implements NestInterceptor<T, Response> {
   constructor(
     @InjectRepository(Audit)
     private readonly auditRepo: Repository<Audit>,
+    private readonly configService: ConfigService<CommonConfig>,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
+
+    if (!this.configService.get('AUDIT')) {
+      return next.handle();
+    }
 
     const requestId = uuid.v4();
     const httpContext = context.switchToHttp();

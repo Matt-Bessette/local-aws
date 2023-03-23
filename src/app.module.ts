@@ -14,25 +14,29 @@ import { SqsModule } from './sqs/sqs.module';
 import { SqsHandlers } from './sqs/sqs.constants';
 import { Audit } from './audit/audit.entity';
 import { AuditInterceptor } from './audit/audit.interceptor';
+import { KmsModule } from './kms/kms.module';
+import { KMSHandlers } from './kms/kms.constants';
+import { configValidator } from './config/config.validator';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [localConfig],
       isGlobal: true,
-      // validationSchema: configValidator,
+      validationSchema: configValidator,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService<CommonConfig>) => ({
         type: 'sqlite',
-        database: configService.get('DB_DATABASE'),
+        database: configService.get('DB_DATABASE') === ':memory:' ? configService.get('DB_DATABASE') : `${__dirname}/../data/${configService.get('DB_DATABASE')}`,
         logging: configService.get('DB_LOGGING'),
         synchronize: configService.get('DB_SYNCHRONIZE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
       }),
     }),
     TypeOrmModule.forFeature([Audit]),
+    KmsModule,
     SecretsManagerModule,
     SnsModule,
     SqsModule,
@@ -50,6 +54,7 @@ import { AuditInterceptor } from './audit/audit.interceptor';
         SnsHandlers,
         SqsHandlers,
         SecretsManagerHandlers,
+        KMSHandlers,
       ],
     },
   ],

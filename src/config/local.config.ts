@@ -1,11 +1,13 @@
 import { CommonConfig } from "./common-config.interface";
 
 export default (): CommonConfig => ({
-  AWS_ACCOUNT_ID: '000000000000',
-  AWS_REGION: 'us-east-1',
-  // DB_DATABASE: ':memory:',
-  DB_DATABASE: 'local-aws.sqlite',
-  DB_LOGGING: true,
+  AUDIT: process.env.DEBUG ? true : false,
+  AWS_ACCOUNT_ID: process.env.AWS_ACCOUNT_ID,
+  AWS_REGION: process.env.AWS_REGION,
+  DB_DATABASE: process.env.PERSISTANCE,
+  DB_LOGGING: process.env.DEBUG ? true : false,
   DB_SYNCHRONIZE: true,
-  HOST: 'http://localhost:8081',
+  HOST: process.env.HOST,
+  PROTO: process.env.PROTOCOL,
+  PORT: Number(process.env.PORT),
 });
