@@ -24,6 +24,7 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
-    "@nestjs/cli": "^9.3.0"
+    "@nestjs/cli": "^9.3.0",
+    "eslint": "^8.36.0"
   }
 }

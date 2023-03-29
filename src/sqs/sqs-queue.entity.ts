@@ -25,7 +25,7 @@ export class SqsQueue extends BaseEntity {
   updatedAt: string;
 
   get arn(): string {
-    return `arn:aws:sns:${this.region}:${this.accountId}:${this.name}`;
+    return `arn:aws:sqs:${this.region}:${this.accountId}:${this.name}`;
   }
 
   getUrl(host: string): string {

@@ -22,12 +22,12 @@ export class ListTopicsHandler extends AbstractActionHandler {
 
   format = Format.Xml;
   action = Action.SnsListTopics;
-  validator = Joi.object<QueryParams, true>({ NextToken: Joi.number().default(0) });
+  validator = Joi.object<QueryParams, true>({ NextToken: Joi.number().default(0) }); 
 
   protected async handle({ NextToken: skip }: QueryParams, awsProperties: AwsProperties) {
     
     const [ topics, total ] = await this.snsTopicRepo.findAndCount({ order: { name: 'DESC' }, take: 100, skip });
-    const response = { Topics: topics.map(t => ({ Topic: { TopicArn: t.topicArn } }))};
+    const response = { Topics: { member: topics.map(t => ({ TopicArn: t.topicArn } ))} };
 
     if (total >= 100) {
       return {

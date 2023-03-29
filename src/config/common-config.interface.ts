@@ -1,5 +1,4 @@
 export interface CommonConfig {
-  AUDIT: boolean;
   AWS_ACCOUNT_ID: string;
   AWS_REGION: string;
   DB_DATABASE: string;

@@ -23,7 +23,6 @@ import { configValidator } from './config/config.validator';
     ConfigModule.forRoot({
       load: [localConfig],
       isGlobal: true,
-      validationSchema: configValidator,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

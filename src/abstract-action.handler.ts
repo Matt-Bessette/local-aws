@@ -15,6 +15,7 @@ export enum Format {
 
 export abstract class AbstractActionHandler<T = Record<string, string | number | boolean>> {
 
+  audit = true;
   abstract format: Format;
   abstract action: Action;
   abstract validator: Joi.ObjectSchema<T>;

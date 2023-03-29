@@ -15,11 +15,15 @@ type QueueEntry = {
 
 type Metrics = { total: number, inFlight: number}
 
+const FIFTEEN_SECONDS = 15 * 1000;
+
 @Injectable()
 export class SqsQueueEntryService {
 
   // Heavy use may require event-driven locking implementation
   private queues: Record<string, QueueEntry[]> = {};
+
+  private queueObjectCache: Record<string, [Date, SqsQueue]> = {};
 
   constructor(
     @InjectRepository(SqsQueue)
@@ -59,10 +63,15 @@ export class SqsQueueEntryService {
   }
 
   async recieveMessages(accountId: string, queueName: string, maxNumberOfMessages = 10, visabilityTimeout = 0): Promise<QueueEntry[]> {
-    const queue = await this.sqsQueueRepo.findOne({ where: { accountId, name: queueName }});
+
+    if (!this.queueObjectCache[`${accountId}/${queueName}`] || this.queueObjectCache[`${accountId}/${queueName}`][0] < new Date()) {
+      this.queueObjectCache[`${accountId}/${queueName}`] = [new Date(Date.now() + FIFTEEN_SECONDS), await this.sqsQueueRepo.findOne({ where: { accountId, name: queueName }})];
+    }
+
+    const [_, queue] = this.queueObjectCache[`${accountId}/${queueName}`];
 
     if (!queue) {
-      throw new BadRequestException();
+      throw new BadRequestException('Queue not found');
     }
 
     const accessDate = new Date();

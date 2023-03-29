@@ -39,7 +39,7 @@ export class GetSecretValueHandler extends AbstractActionHandler {
 
     return {
       ARN: secret.arn,
-      CreatedDate: secret.createdAt,
+      CreatedDate: new Date(secret.createdAt).valueOf(),
       Name: secret.name,
       SecretString: secret.secretString,
       VersionId: secret.versionId,
