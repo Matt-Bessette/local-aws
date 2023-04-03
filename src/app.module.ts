@@ -17,6 +17,8 @@ import { AuditInterceptor } from './audit/audit.interceptor';
 import { KmsModule } from './kms/kms.module';
 import { KMSHandlers } from './kms/kms.constants';
 import { configValidator } from './config/config.validator';
+import { IamModule } from './iam/iam.module';
+import { IAMHandlers } from './iam/iam.constants';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import { configValidator } from './config/config.validator';
       }),
     }),
     TypeOrmModule.forFeature([Audit]),
+    IamModule,
     KmsModule,
     SecretsManagerModule,
     SnsModule,
@@ -54,6 +57,7 @@ import { configValidator } from './config/config.validator';
         SqsHandlers,
         SecretsManagerHandlers,
         KMSHandlers,
+        IAMHandlers,
       ],
     },
   ],

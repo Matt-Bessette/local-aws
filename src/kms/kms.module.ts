@@ -5,10 +5,15 @@ import { Action } from '../action.enum';
 import { AwsSharedEntitiesModule } from '../aws-shared-entities/aws-shared-entities.module';
 import { DefaultActionHandlerProvider } from '../default-action-handler/default-action-handler.provider';
 import { ExistingActionHandlersProvider } from '../default-action-handler/existing-action-handlers.provider';
+import { CreateAliasHandler } from './create-alias.handler';
+import { DescribeKeyHandler } from './describe-key.handler';
+import { KmsKeyAlias } from './kms-key-alias.entity';
+import { KmsKey } from './kms-key.entity';
 import { KMSHandlers } from './kms.constants';
 
 const handlers = [
-
+  CreateAliasHandler,
+  DescribeKeyHandler,
 ]
 
 const actions = [
@@ -66,7 +71,7 @@ const actions = [
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([]),
+    TypeOrmModule.forFeature([KmsKey, KmsKeyAlias]),
     AwsSharedEntitiesModule,
   ],
   providers: [
