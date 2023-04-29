@@ -8,6 +8,7 @@ import { ExistingActionHandlersProvider } from '../default-action-handler/existi
 import { CreateQueueHandler } from './create-queue.handler';
 import { DeleteQueueHandler } from './delete-queue.handler';
 import { GetQueueAttributesHandler } from './get-queue-attributes.handler';
+import { ListQueuesHandler } from './list-queues.handler';
 import { PurgeQueueHandler } from './purge-queue.handler';
 import { ReceiveMessageHandler } from './receive-message.handler';
 import { SetQueueAttributesHandler } from './set-queue-attributes.handler';
@@ -19,6 +20,7 @@ const handlers = [
   CreateQueueHandler,
   DeleteQueueHandler,
   GetQueueAttributesHandler,
+  ListQueuesHandler,
   PurgeQueueHandler,
   ReceiveMessageHandler,
   SetQueueAttributesHandler,

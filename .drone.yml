@@ -1,0 +1,20 @@
+kind: pipeline
+type: docker
+name: default
+steps:
+  - name: build backend
+    image: docker.thiccdata.io/nvm-node-debian:latest
+    commands:
+      - docker build -t docker.thiccdata.io/mtg-event-manager-backend:latest -f ./backend/Dockerfile ./
+      - docker push docker.thiccdata.io/mtg-event-manager-backend:latest
+    volumes:
+    - name: docker
+      path: /var/run/docker.sock
+trigger:
+  branch:
+  - main
+  
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock

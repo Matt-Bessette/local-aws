@@ -6,6 +6,7 @@ import { AwsSharedEntitiesModule } from '../aws-shared-entities/aws-shared-entit
 import { DefaultActionHandlerProvider } from '../default-action-handler/default-action-handler.provider';
 import { ExistingActionHandlersProvider } from '../default-action-handler/existing-action-handlers.provider';
 import { CreateSecretHandler } from './create-secret.handler';
+import { DeleteSecretHandler } from './delete-secret.handler';
 import { DescribeSecretHandler } from './describe-secret.handler';
 import { GetResourcePolicyHandler } from './get-resource-policy.handler';
 import { GetSecretValueHandler } from './get-secret-value.handler';
@@ -17,6 +18,7 @@ import { SecretsManagerHandlers } from './secrets-manager.constants';
 
 const handlers = [
   CreateSecretHandler,
+  DeleteSecretHandler,
   DescribeSecretHandler,
   GetResourcePolicyHandler,
   GetSecretValueHandler,

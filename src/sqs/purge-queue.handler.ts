@@ -6,7 +6,7 @@ import { SqsQueue } from './sqs-queue.entity';
 import { SqsQueueEntryService } from './sqs-queue-entry.service';
 
 type QueryParams = {
-  __path: string;
+  QueueUrl: string;
 }
 
 @Injectable()
@@ -20,11 +20,11 @@ export class PurgeQueueHandler extends AbstractActionHandler<QueryParams> {
 
   format = Format.Xml;
   action = Action.SqsPurgeQueue;
-  validator = Joi.object<QueryParams, true>({ __path: Joi.string().required() });
+  validator = Joi.object<QueryParams, true>({ QueueUrl: Joi.string().required() });
 
-  protected async handle({ __path }: QueryParams, awsProperties: AwsProperties) {
+  protected async handle({ QueueUrl }: QueryParams, awsProperties: AwsProperties) {
 
-    const [accountId, name] = SqsQueue.getAccountIdAndNameFromPath(__path);
+    const [accountId, name] = SqsQueue.tryGetAccountIdAndNameFromPathOrArn(QueueUrl);
     await this.sqsQueueEntryService.purge(accountId, name);
   }
 }

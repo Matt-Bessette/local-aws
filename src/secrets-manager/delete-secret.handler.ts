@@ -11,7 +11,7 @@ type QueryParams = {
 }
 
 @Injectable()
-export class GetSecretValueHandler extends AbstractActionHandler {
+export class DeleteSecretHandler extends AbstractActionHandler {
   
   constructor(
     private readonly secretService: SecretService,
@@ -20,7 +20,7 @@ export class GetSecretValueHandler extends AbstractActionHandler {
   }
 
   format = Format.Json;
-  action = Action.SecretsManagerGetSecretValue;
+  action = Action.SecretsManagerDeleteSecret;
   validator = Joi.object<QueryParams, true>({ 
     SecretId: Joi.string().required(),
     VersionId: Joi.string().allow(null, ''),
@@ -37,12 +37,12 @@ export class GetSecretValueHandler extends AbstractActionHandler {
       throw new BadRequestException('ResourceNotFoundException', "Secrets Manager can't find the resource that you asked for.");
     }
 
+    secret.deletionDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 5).toISOString();
+    await secret.save();
     return {
-      ARN: secret.arn,
-      CreatedDate: new Date(secret.createdAt).valueOf() / 1000,
+      Arn: secret.arn,
+      DeletionDate: secret.deletionDate,
       Name: secret.name,
-      SecretString: secret.secretString,
-      VersionId: secret.versionId,
     }
   }
 }

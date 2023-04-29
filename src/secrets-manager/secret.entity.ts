@@ -25,6 +25,9 @@ export class Secret extends BaseEntity {
   @CreateDateColumn()
   createdAt: string;
 
+  @Column({ name: 'deletion_date', nullable: true })
+  deletionDate: string;
+
   get arn(): string {
     return `arn:aws:secretsmanager:${this.region}:${this.accountId}:${this.name}`;
   }

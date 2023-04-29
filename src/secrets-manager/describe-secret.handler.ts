@@ -41,7 +41,7 @@ export class DescribeSecretHandler extends AbstractActionHandler {
     return {
       "ARN": secret.arn,
       "CreatedDate": new Date(secret.createdAt).toISOString(),
-      "DeletedDate": null,
+      "DeletedDate": secret.deletionDate ? new Date(secret.deletionDate).toISOString() : null,
       "Description": secret.description,
       "KmsKeyId": "",
       "LastChangedDate": new Date(secret.createdAt).toISOString(),

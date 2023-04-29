@@ -33,7 +33,6 @@ export class AppController {
     }, {})
 
     const queryParams = { __path: request.path, ...body, ...lowerCasedHeaders };
-    console.log({ queryParams })
     const actionKey = queryParams['x-amz-target'] ? 'x-amz-target' : 'Action';
     const { error: actionError } = Joi.object({
       [actionKey]: Joi.string().valid(...Object.values(Action)).required(),
